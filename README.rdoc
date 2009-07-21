@@ -1,0 +1,7 @@
+= dm-googlebase
+
+Description goes here.
+
+== Copyright
+
+Copyright (c) 2009 Carl Porth. See LICENSE for details.
