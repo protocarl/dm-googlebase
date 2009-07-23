@@ -286,4 +286,39 @@ describe GoogleBase::Adapter do
     end
 
   end
+
+  describe "update" do
+
+    before(:each) do
+      Item.property :title, String
+
+      get_response = GData::HTTP::Response.new
+      get_response.status_code = 200
+      get_response.body = xml_entry('title' => 'foo', 'id' => 'http://www.google.com/base/feeds/items/123456789')
+
+      @adapter.gb.stub(:get).and_return(get_response)
+
+      @put_response = GData::HTTP::Response.new
+      @put_response.status_code = 200
+    end
+
+    def do_update
+      item = Item.get(1)
+      item.title = 'bar'
+      item.save
+    end
+
+    it "updates a resource" do
+      @adapter.gb.should_receive(:put).with("http://www.google.com/base/feeds/items/123456789", /<title>bar<\/title>/).and_return(@put_response)
+
+      do_update
+    end
+
+    it "updates a resource with dry run" do
+      @adapter.gb.should_receive(:put).with("http://www.google.com/base/feeds/items/123456789?dry-run=true", /<title>bar<\/title>/).and_return(@put_response)
+      @adapter.dry_run = true
+
+      do_update
+    end
+  end
 end
