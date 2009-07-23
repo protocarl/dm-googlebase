@@ -321,4 +321,37 @@ describe GoogleBase::Adapter do
       do_update
     end
   end
+
+  describe "delete" do
+
+    before(:each) do
+      get_response = GData::HTTP::Response.new
+      get_response.status_code = 200
+      get_response.body = xml_entry('id' => 'http://www.google.com/base/feeds/items/123456789')
+
+      @adapter.gb.stub(:get).and_return(get_response)
+
+      @delete_response = GData::HTTP::Response.new
+      @delete_response.status_code = 200
+    end
+
+    def do_delete
+      Item.get(1).destroy
+    end
+
+    it "deletes a resource" do
+      @adapter.gb.should_receive(:delete).with("http://www.google.com/base/feeds/items/123456789").and_return(@delete_response)
+
+      do_delete
+    end
+
+    it "deletes a resource with dry run" do
+      @adapter.gb.should_receive(:delete).with("http://www.google.com/base/feeds/items/123456789?dry-run=true").and_return(@delete_response)
+      @adapter.dry_run = true
+
+      do_delete
+    end
+
+  end
+
 end

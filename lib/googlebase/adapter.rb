@@ -94,6 +94,21 @@ module GoogleBase
       result
     end
 
+    def delete(resources)
+      result = 0
+
+      resources.each do |resource|
+        url = resource.key.first
+        url << "?dry-run=true" if @dry_run
+
+        response = @gb.delete(url)
+
+        result += 1 if response.status_code == 200
+      end
+
+      result
+    end
+
     def token
       @gb.auth_handler.token
     end
