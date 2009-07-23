@@ -74,7 +74,7 @@ module GoogleBase
           value = property.get(resource)
           if custom = property.options[:xml]
             custom.call(xml, value)
-          else
+          elsif not property.options.has_key?(:xml)
             xml.tag! property.name, value
           end
         end

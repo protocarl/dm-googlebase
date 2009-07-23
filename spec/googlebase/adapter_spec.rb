@@ -225,6 +225,13 @@ describe GoogleBase::Adapter do
       xml.at('./g:id')['type'].should == 'text'
     end
 
+    it "doesn't set with :xml => false" do
+      Item.property :updated_at, DateTime, :xml => false
+      xml = build_xml :updated_at => DateTime.now
+
+      xml.to_s.should_not match(/updated/)
+    end
+
     it "sets multiple tags" do
       Item.property :payment_accepted, String, :xml => lambda { |xml, values| values.split(',').each { |value| xml.tag! 'g:payment_accepted', value, :type => 'text' } }
       xml = build_xml :payment_accepted => 'Visa,MasterCard,American Express,Discover'
