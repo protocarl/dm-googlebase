@@ -30,6 +30,17 @@ describe GoogleBase::Adapter do
     Object.send(:remove_const, :Item)
   end
 
+  describe "setup" do
+    before(:each) do
+      @config = { :adapter => :google_base, :user => 'carl', :password => 'secret' }
+    end
+
+    it "accepts dry_run" do
+      adapter = DataMapper.setup(:default, @config.merge(:dry_run => true))
+      adapter.dry_run.should == true
+    end
+  end
+
   describe 'authenticating' do
 
     # TODO ensure user and password are used

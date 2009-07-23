@@ -18,6 +18,8 @@ module GoogleBase
       'xmlns:gd' => 'http://schemas.google.com/g/2005'
     }
 
+    attr_accessor :dry_run
+
     def read(query)
       records = []
 
@@ -94,6 +96,7 @@ module GoogleBase
       @gb = GData::Client::GBase.new
       @gb.source = 'dm-googlebase'
       @gb.clientlogin(options[:user], options[:password])
+      @dry_run = options[:dry_run] || false
     end
 
     def each_record(xml, fields)
