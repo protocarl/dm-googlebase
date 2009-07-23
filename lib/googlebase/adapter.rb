@@ -18,6 +18,7 @@ module GoogleBase
       'xmlns:gd' => 'http://schemas.google.com/g/2005'
     }
 
+    attr_reader :gb
     attr_accessor :dry_run
 
     def read(query)
@@ -59,6 +60,22 @@ module GoogleBase
       end
 
       records
+    end
+
+    def create(resources)
+      result = 0
+
+      resources.each do |resource|
+        xml = build_xml(resource)
+        url = "http://www.google.com/base/feeds/items"
+        url << "?dry-run=true" if @dry_run
+
+        response = @gb.post(url, xml)
+
+        result += 1 if response.status_code == 201
+      end
+
+      result
     end
 
     def token

@@ -257,4 +257,33 @@ describe GoogleBase::Adapter do
       xml.at('./g:payment_accepted[4]')['type'].should == 'text'
     end
   end
+
+  describe "create" do
+
+    before(:each) do
+      @response = GData::HTTP::Response.new
+      @response.status_code = 201
+      @matching_xml = /<title>hai<\/title>/
+    end
+
+    def do_create
+      Item.property :title, String
+      item = Item.new(:title => 'hai')
+      item.save
+    end
+
+    it "creates a resource" do
+      @adapter.gb.should_receive(:post).with("http://www.google.com/base/feeds/items", @matching_xml).and_return(@response)
+
+      do_create
+    end
+
+    it "creates a resource with dry run" do
+      @adapter.gb.should_receive(:post).with("http://www.google.com/base/feeds/items?dry-run=true", @matching_xml).and_return(@response)
+      @adapter.dry_run = true
+
+      do_create
+    end
+
+  end
 end
