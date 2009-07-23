@@ -175,4 +175,68 @@ describe GoogleBase::Adapter do
 
   end
 
+  describe "building xml" do
+
+    def build_xml(options = {})
+      item = Item.new(options)
+
+      doc = Nokogiri::XML.parse(@adapter.build_xml(item))
+      doc.at('./xmlns:entry')
+    end
+
+    it "sets namespaces" do
+      xml = build_xml
+
+      xml.namespaces['xmlns'].should    == 'http://www.w3.org/2005/Atom'
+      xml.namespaces['xmlns:g'].should  == 'http://base.google.com/ns/1.0'
+      xml.namespaces['xmlns:gd'].should == 'http://schemas.google.com/g/2005'
+    end
+
+    it "sets atom title" do
+      Item.property :title, String, :xml => lambda { |xml, value| xml.title value, :type => 'text' }
+      xml = build_xml :title => 'Hai'
+
+      xml.at('title').content.should == 'Hai'
+      xml.at('title')['type'].should == 'text'
+    end
+
+    it "sets atom alternate link" do
+      Item.property :link, URI, :xml => lambda { |xml, value| xml.link :href => value, :type => 'text/html', :rel => 'alternate' }
+      xml = build_xml :link => 'http://example.com/products/123'
+
+      xml.at('link')['href'].should == 'http://example.com/products/123'
+      xml.at('link')['rel'].should  == 'alternate'
+      xml.at('link')['type'].should == 'text/html'
+    end
+
+    it "sets atom content" do
+      Item.property :description, String, :xml => lambda { |xml, value| xml.content value, :type => 'html' }
+      xml = build_xml :description => 'About me'
+
+      xml.at('content').content.should == 'About me'
+      xml.at('content')['type'].should == 'html'
+    end
+
+    it "sets a g: namespace" do
+      Item.property :g_id, String, :xml => lambda { |xml, value| xml.tag! 'g:id', value, :type => 'text' }
+      xml = build_xml :g_id => '123'
+
+      xml.at('./g:id').content.should == '123'
+      xml.at('./g:id')['type'].should == 'text'
+    end
+
+    it "sets multiple tags" do
+      Item.property :payment_accepted, String, :xml => lambda { |xml, values| values.split(',').each { |value| xml.tag! 'g:payment_accepted', value, :type => 'text' } }
+      xml = build_xml :payment_accepted => 'Visa,MasterCard,American Express,Discover'
+
+      xml.at('./g:payment_accepted[1]').content.should == 'Visa'
+      xml.at('./g:payment_accepted[1]')['type'].should == 'text'
+      xml.at('./g:payment_accepted[2]').content.should == 'MasterCard'
+      xml.at('./g:payment_accepted[2]')['type'].should == 'text'
+      xml.at('./g:payment_accepted[3]').content.should == 'American Express'
+      xml.at('./g:payment_accepted[3]')['type'].should == 'text'
+      xml.at('./g:payment_accepted[4]').content.should == 'Discover'
+      xml.at('./g:payment_accepted[4]')['type'].should == 'text'
+    end
+  end
 end
