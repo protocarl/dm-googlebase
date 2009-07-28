@@ -21,7 +21,7 @@ describe GoogleBase::Adapter do
 
     class ::Item
       include DataMapper::Resource
-      property :id, String, :key => true, :field => 'xmlns:id/text()'
+      property :id, String, :key => true, :field => 'xmlns:id', :nullable => true
     end
   end
 
@@ -66,44 +66,44 @@ describe GoogleBase::Adapter do
       do_read_one.id.should == @url
     end
 
-    it "parses an atom title" do
-      Item.property :title, String, :field => 'xmlns:title/text()'
+    it "parses an element via :field" do
+      Item.property :title, String, :field => 'xmlns:title'
       stub_get('title' => 'Product Title')
       do_read_one.title.should == 'Product Title'
     end
 
-    it "parses an atom content" do
-      Item.property :description, String, :field => 'xmlns:content/text()'
-      stub_get('content' => 'The Product Description')
-      do_read_one.description.should == 'The Product Description'
-    end
-
-    it "parses an atom link" do
-      Item.property :alternate_link, URI, :field => "xmlns:link[@rel='alternate']/@href"
+    it "parses an element via :from_xml string" do
+      Item.property :alternate_link, URI, :from_xml => "xmlns:link[@rel='alternate']/@href"
       stub_get('alternate_link' => 'http://example.com/products/123')
       do_read_one.alternate_link.should == Addressable::URI.parse('http://example.com/products/123')
     end
 
-    it "parses an atom date" do
-      Item.property :published, DateTime, :field => "xmlns:published/text()"
+    it "parses an element via :from_xml proc" do
+      Item.property :alternate_link, URI, :from_xml => lambda { |entry| entry.at("./xmlns:link[@rel='alternate']")['href'] }
+      stub_get('alternate_link' => 'http://example.com/products/123')
+      do_read_one.alternate_link.should == Addressable::URI.parse('http://example.com/products/123')
+    end
+
+    it "parses and typecasts a date via :from_xml string" do
+      Item.property :published, DateTime, :from_xml => "xmlns:published"
       stub_get('published' => '2008-06-12T02:47:04.000Z')
       do_read_one.published.should == DateTime.civil(2008, 6, 12, 2, 47, 4)
     end
 
-    it "parses an atom author name" do
-      Item.property :author_name, String, :field => 'xmlns:author/xmlns:name/text()'
+    it "parses a nested element via :from_xml string" do
+      Item.property :author_name, String, :from_xml => 'xmlns:author/xmlns:name'
       stub_get('author_name' => 'Carl Porth')
       do_read_one.author_name.should == 'Carl Porth'
     end
 
-    it "parses a g: namespace" do
-      Item.property :condition, String, :field => 'g:condition/text()'
+    it "parses a g: namespaced element via :field" do
+      Item.property :condition, String, :field => 'g:condition'
       stub_get('g:condition' => 'used')
       do_read_one.condition.should == 'used'
     end
 
-    it "parses a g: namespace and typecasts" do
-      Item.property :customer_id, Integer, :field => 'g:customer_id/text()'
+    it "parses a g: namespace and typecasts via :field" do
+      Item.property :customer_id, Integer, :field => 'g:customer_id'
       stub_get('g:customer_id' => '1234')
       do_read_one.customer_id.should == 1234
     end
@@ -203,58 +203,36 @@ describe GoogleBase::Adapter do
       xml.namespaces['xmlns:gd'].should == 'http://schemas.google.com/g/2005'
     end
 
-    it "sets atom title" do
-      Item.property :title, String, :xml => lambda { |xml, value| xml.title value, :type => 'text' }
-      xml = build_xml :title => 'Hai'
+    it "builds an element" do
+      Item.property :some_field, String
+      xml = build_xml(:some_field => 'value')
 
-      xml.at('title').content.should == 'Hai'
-      xml.at('title')['type'].should == 'text'
+      xml.at('some_field').content.should == 'value'
     end
 
-    it "sets atom alternate link" do
-      Item.property :link, URI, :xml => lambda { |xml, value| xml.link :href => value, :type => 'text/html', :rel => 'alternate' }
-      xml = build_xml :link => 'http://example.com/products/123'
+    it "builds an element via :field" do
+      Item.property :some_field, String, :field => 'another_name'
+      xml = build_xml(:some_field => 'value')
 
-      xml.at('link')['href'].should == 'http://example.com/products/123'
-      xml.at('link')['rel'].should  == 'alternate'
-      xml.at('link')['type'].should == 'text/html'
+      xml.at('another_name').content.should == 'value'
     end
 
-    it "sets atom content" do
-      Item.property :description, String, :xml => lambda { |xml, value| xml.content value, :type => 'html' }
-      xml = build_xml :description => 'About me'
+    it "builds an element via :to_xml" do
+      Item.property :some_link, String,
+        :to_xml => lambda { |xml, value| xml.tag! 'some_link_here', :href => value, :type => 'text/html', :rel => 'alternate' }
+      xml = build_xml :some_link => 'http://example.com/something'
 
-      xml.at('content').content.should == 'About me'
-      xml.at('content')['type'].should == 'html'
+      xml.at('some_link_here')['href'].should == 'http://example.com/something'
+      xml.at('some_link_here')['rel'].should  == 'alternate'
+      xml.at('some_link_here')['type'].should == 'text/html'
     end
 
-    it "sets a g: namespace" do
-      Item.property :g_id, String, :xml => lambda { |xml, value| xml.tag! 'g:id', value, :type => 'text' }
-      xml = build_xml :g_id => '123'
+    it "doesn't build an element with :to_xml => false" do
+      Item.property :ignore_me, String, :to_xml => false
+      xml = build_xml :ignore_me => 'Hai'
 
-      xml.at('./g:id').content.should == '123'
-      xml.at('./g:id')['type'].should == 'text'
-    end
-
-    it "doesn't set with :xml => false" do
-      Item.property :updated_at, DateTime, :xml => false
-      xml = build_xml :updated_at => DateTime.now
-
-      xml.to_s.should_not match(/updated/)
-    end
-
-    it "sets multiple tags" do
-      Item.property :payment_accepted, String, :xml => lambda { |xml, values| values.split(',').each { |value| xml.tag! 'g:payment_accepted', value, :type => 'text' } }
-      xml = build_xml :payment_accepted => 'Visa,MasterCard,American Express,Discover'
-
-      xml.at('./g:payment_accepted[1]').content.should == 'Visa'
-      xml.at('./g:payment_accepted[1]')['type'].should == 'text'
-      xml.at('./g:payment_accepted[2]').content.should == 'MasterCard'
-      xml.at('./g:payment_accepted[2]')['type'].should == 'text'
-      xml.at('./g:payment_accepted[3]').content.should == 'American Express'
-      xml.at('./g:payment_accepted[3]')['type'].should == 'text'
-      xml.at('./g:payment_accepted[4]').content.should == 'Discover'
-      xml.at('./g:payment_accepted[4]')['type'].should == 'text'
+      xml.to_s.should_not match(/ignore_me/)
+      xml.to_s.should_not match(/Hai/)
     end
   end
 
@@ -269,7 +247,7 @@ describe GoogleBase::Adapter do
     def do_create
       Item.property :title, String
       item = Item.new(:title => 'hai')
-      item.save
+      item.save.should be_true
     end
 
     it "creates a resource" do

@@ -5,7 +5,7 @@ require 'builder'
 
 module DataMapper
   class Property
-    OPTIONS << :xml
+    OPTIONS << :to_xml << :from_xml
   end
 end
 
@@ -122,10 +122,12 @@ module GoogleBase
       xml.entry(XML_ATTRIBUTES) do
         resource.model.properties.each do |property|
           value = property.get(resource)
-          if custom = property.options[:xml]
-            custom.call(xml, value)
-          elsif not property.options.has_key?(:xml)
-            xml.tag! property.name, value
+          next if value.blank?
+
+          if to_xml = property.options[:to_xml]
+            to_xml.call(xml, value)
+          elsif not property.options.has_key?(:to_xml)
+            xml.tag! property.field, value
           end
         end
       end
@@ -150,9 +152,20 @@ module GoogleBase
     def each_record(xml, fields)
       xml.xpath('./xmlns:entry').each do |entry|
         record = fields.map do |property|
-          value = property.typecast(entry.at("./#{property.field}").to_s)
 
-          [ property.field, value ]
+          value = if from_xml = property.options[:from_xml]
+            if from_xml.respond_to?(:call)
+              from_xml.call(entry)
+            else
+              element = entry.at("./#{from_xml}") or next
+              element.content
+            end
+          else
+            element = entry.at("./#{property.field}") or next
+            element.content
+          end
+
+          [ property.field, property.typecast(value.to_s) ]
         end
 
         yield record.to_hash
