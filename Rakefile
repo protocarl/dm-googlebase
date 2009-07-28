@@ -9,7 +9,13 @@ begin
     gem.email = "badcarl@gmail.com"
     gem.homepage = "http://github.com/badcarl/dm-googlebase"
     gem.authors = ["Carl Porth"]
-    # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
+    gem.add_dependency 'dm-core',        '>= 0.10.0'
+    gem.add_dependency 'dm-types',       '>= 0.10.0'
+    gem.add_dependency 'dm-validations', '>= 0.10.0'
+    gem.add_dependency 'gdata'
+    gem.add_dependency 'nokogiri'
+    gem.add_dependency 'builder'
+    gem.add_development_dependency 'dm-sweatshop', '>= 0.10.0'
   end
 
 rescue LoadError
