@@ -5,7 +5,7 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
     gem.name = "dm-googlebase"
-    gem.summary = %Q{TODO}
+    gem.summary = %Q{A DataMapper adapter for Google Base}
     gem.email = "badcarl@gmail.com"
     gem.homepage = "http://github.com/badcarl/dm-googlebase"
     gem.authors = ["Carl Porth"]
