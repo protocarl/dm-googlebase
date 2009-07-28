@@ -116,7 +116,7 @@ module GoogleBase
     def build_xml(resource)
       result = ""
 
-      xml = Builder::XmlMarkup.new(:target => result, :indent => 2)
+      xml = Builder::XmlMarkup.new(:target => result)
       xml.instruct!
 
       xml.entry(XML_ATTRIBUTES) do
