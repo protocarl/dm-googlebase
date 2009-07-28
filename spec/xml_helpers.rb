@@ -72,6 +72,7 @@ module XmlHelpers
       'gd:feedLink' => "#{id}/media"
     })
 
+    updated_options.keys.each { |key| raise "Don't know #{key}" unless options.has_key?(key) }
     options.merge!(updated_options)
 
     <<-XML.compress_lines(false)
