@@ -19,6 +19,7 @@ Gem::Specification.new do |s|
      "README.rdoc",
      "Rakefile",
      "VERSION",
+     "dm-googlebase.gemspec",
      "lib/googlebase.rb",
      "lib/googlebase/adapter.rb",
      "lib/googlebase/product.rb",
