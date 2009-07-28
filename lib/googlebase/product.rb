@@ -1,4 +1,4 @@
-require "dm-types"
+require "dm-types/uri"
 require "dm-validations"
 
 module GoogleBase
