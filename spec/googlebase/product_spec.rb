@@ -1,6 +1,4 @@
 require File.dirname(__FILE__) + '/../spec_helper'
-require 'googlebase/adapter'
-require 'googlebase/product'
 require 'dm-sweatshop'
 
 describe GoogleBase::Product do

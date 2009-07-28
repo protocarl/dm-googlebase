@@ -5,5 +5,7 @@ require "extlib"
 module GoogleBase
   dir = (Pathname(__FILE__).dirname.expand_path / 'googlebase').to_s
 
-  autoload :Adapter, dir / 'adapter'
+  require dir / 'adapter'
+
+  autoload :Product, dir / 'product'
 end
