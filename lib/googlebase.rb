@@ -7,5 +7,6 @@ module GoogleBase
 
   require dir / 'adapter'
 
-  autoload :Product, dir / 'product'
+  autoload :Product,           dir / 'product'
+  autoload :ProductProperties, dir / 'product_properties'
 end
