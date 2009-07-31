@@ -1,7 +1,7 @@
 Spec::Matchers.define :match_xml_document do |expected|
   match do |actual|
-    actual_doc   = Nokogiri::XML.parse(actual)
-    expected_doc = Nokogiri::XML.parse(expected)
+    actual_doc   = Nokogiri.XML(actual)   { |cfg| cfg.noblanks }
+    expected_doc = Nokogiri.XML(expected) { |cfg| cfg.noblanks }
 
     actual_doc.encoding.should == expected_doc.encoding
     actual_doc.root.should match_xml_node(expected_doc.root)
