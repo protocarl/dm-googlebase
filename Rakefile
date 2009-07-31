@@ -14,7 +14,6 @@ begin
     gem.add_dependency 'dm-validations', '>= 0.10.0'
     gem.add_dependency 'gdata'
     gem.add_dependency 'nokogiri'
-    gem.add_dependency 'builder'
     gem.add_development_dependency 'dm-sweatshop', '>= 0.10.0'
   end
 

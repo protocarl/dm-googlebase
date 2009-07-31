@@ -1,7 +1,6 @@
 require 'dm-core'
 require 'gdata'
 require 'nokogiri'
-require 'builder'
 
 module DataMapper
   class Property
@@ -114,25 +113,24 @@ module GoogleBase
     end
 
     def build_xml(resource)
-      result = ""
+      builder = Nokogiri::XML::Builder.new(:encoding => 'UTF-8') do |xml|
 
-      xml = Builder::XmlMarkup.new(:target => result)
-      xml.instruct!
+        xml.entry(XML_ATTRIBUTES) do
+          resource.model.properties.each do |property|
+            value = property.get(resource)
+            next if value.blank?
 
-      xml.entry(XML_ATTRIBUTES) do
-        resource.model.properties.each do |property|
-          value = property.get(resource)
-          next if value.blank?
-
-          if to_xml = property.options[:to_xml]
-            to_xml.call(xml, value)
-          elsif not property.options.has_key?(:to_xml)
-            xml.tag! property.field, value
+            if to_xml = property.options[:to_xml]
+              to_xml.call(xml, value)
+            elsif not property.options.has_key?(:to_xml)
+              xml.send "#{property.field}_", value
+            end
           end
         end
+
       end
 
-      result
+      builder.to_xml
     end
 
     private

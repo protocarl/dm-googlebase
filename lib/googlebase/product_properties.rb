@@ -5,8 +5,7 @@ require 'dm-validations'
 module GoogleBase
   ProductProperties = LazyModule.new do
     property :id, String, :key => true, :nullable => true, :length => 255, :from_xml => 'xmlns:id'
-    property :title, String, :from_xml => 'xmlns:title', :length => 70,
-      :to_xml => lambda { |xml, value| xml.title value }
+    property :title, String, :from_xml => 'xmlns:title', :length => 70
     property :description, DataMapper::Types::Text, :field => 'content', :from_xml => 'xmlns:content', :lazy => false
     property :link, URI, :from_xml => "xmlns:link[@rel='alternate']/@href",
       :to_xml => lambda { |xml, value| xml.link :href => value, :type => 'text/html', :rel => 'alternate' }
@@ -20,11 +19,11 @@ module GoogleBase
 
     # optional
     property :expires_at, DateTime, :field => 'g:expiration_date',
-      :to_xml => lambda { |xml, value| xml.tag! 'g:expiration_date', value.strftime('%F') }
+      :to_xml => lambda { |xml, value| xml.send 'g:expiration_date', value.strftime('%F') }
     property :quantity, Integer, :field => 'g:quantity'
     property :payment_accepted, String,
       :from_xml => lambda { |entry| entry.xpath('./g:payment').map { |e| e.content }.join(',') },
-      :to_xml => lambda { |xml, values| values.split(',').each { |value| xml.tag! 'g:payment_accepted', value } }
+      :to_xml => lambda { |xml, values| values.split(',').each { |value| xml.send 'g:payment_accepted', value } }
     property :item_language, String,  :field => 'g:item_language'
     property :target_country, String, :field => 'g:target_country'
 

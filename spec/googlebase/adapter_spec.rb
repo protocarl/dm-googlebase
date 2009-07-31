@@ -218,7 +218,7 @@ describe GoogleBase::Adapter do
 
     it "builds an element via :to_xml" do
       Item.property :some_link, String,
-        :to_xml => lambda { |xml, value| xml.tag! 'some_link_here', :href => value, :type => 'text/html', :rel => 'alternate' }
+        :to_xml => lambda { |xml, value| xml.some_link_here :href => value, :type => 'text/html', :rel => 'alternate' }
       xml = build_xml :some_link => 'http://example.com/something'
 
       xml.at('some_link_here')['href'].should == 'http://example.com/something'
