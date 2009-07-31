@@ -41,10 +41,10 @@ class MatchXMLNode
 
   def failure_message_for_should
     @actual_part = @actual.dup
-    @actual_part.text = nil if @actual_part.child && !@actual_part.child.text?
+    @actual_part.content = nil if @actual_part.child && !@actual_part.child.text?
 
     @expected_part = @expected.dup
-    @expected_part.text = nil if @expected_part.child && !@expected_part.child.text?
+    @expected_part.content = nil if @expected_part.child && !@expected_part.child.text?
 
     "expected:\n#{@actual_part.inspect}\n to match node:\n#{@expected_part.inspect}\n but it didn't"
   end
