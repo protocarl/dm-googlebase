@@ -2,11 +2,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{dm-googlebase}
-  s.version = "0.0.4"
+  s.version = "0.0.5"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Carl Porth"]
-  s.date = %q{2009-07-29}
+  s.date = %q{2009-07-31}
   s.email = %q{badcarl@gmail.com}
   s.extra_rdoc_files = [
     "LICENSE",
@@ -33,7 +33,7 @@ Gem::Specification.new do |s|
   s.homepage = %q{http://github.com/badcarl/dm-googlebase}
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
-  s.rubygems_version = %q{1.3.3}
+  s.rubygems_version = %q{1.3.5}
   s.summary = %q{A DataMapper adapter for Google Base}
   s.test_files = [
     "spec/googlebase/adapter_spec.rb",
@@ -53,7 +53,6 @@ Gem::Specification.new do |s|
       s.add_runtime_dependency(%q<dm-validations>, [">= 0.10.0"])
       s.add_runtime_dependency(%q<gdata>, [">= 0"])
       s.add_runtime_dependency(%q<nokogiri>, [">= 0"])
-      s.add_runtime_dependency(%q<builder>, [">= 0"])
       s.add_development_dependency(%q<dm-sweatshop>, [">= 0.10.0"])
     else
       s.add_dependency(%q<dm-core>, [">= 0.10.0"])
@@ -61,7 +60,6 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<dm-validations>, [">= 0.10.0"])
       s.add_dependency(%q<gdata>, [">= 0"])
       s.add_dependency(%q<nokogiri>, [">= 0"])
-      s.add_dependency(%q<builder>, [">= 0"])
       s.add_dependency(%q<dm-sweatshop>, [">= 0.10.0"])
     end
   else
@@ -70,7 +68,6 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<dm-validations>, [">= 0.10.0"])
     s.add_dependency(%q<gdata>, [">= 0"])
     s.add_dependency(%q<nokogiri>, [">= 0"])
-    s.add_dependency(%q<builder>, [">= 0"])
     s.add_dependency(%q<dm-sweatshop>, [">= 0.10.0"])
   end
 end
