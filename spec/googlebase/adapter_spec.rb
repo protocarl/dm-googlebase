@@ -20,7 +20,7 @@ describe GoogleBase::Adapter do
 
     class ::Item
       include DataMapper::Resource
-      property :id, String, :key => true, :field => 'xmlns:id', :nullable => true
+      property :id, String, :key => true, :field => 'xmlns:id', :required => false
     end
   end
 
