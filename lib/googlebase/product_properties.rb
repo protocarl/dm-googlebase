@@ -4,11 +4,9 @@ require 'dm-validations'
 
 module GoogleBase
   ProductProperties = LazyModule.new do
-    Text = DataMapper::Types::Text
-
     property :id,           String, :key => true, :nullable => true, :length => 255, :from_xml => 'xmlns:id'
     property :title,        String, :from_xml => 'xmlns:title', :length => 70
-    property :description,  Text,   :field => 'content', :from_xml => 'xmlns:content', :lazy => false
+    property :description,  DataMapper::Types::Text, :field => 'content', :from_xml => 'xmlns:content', :lazy => false
     property :link,         URI,
       :from_xml => "xmlns:link[@rel='alternate']/@href",
       :to_xml => lambda { |xml, value| xml.link :href => value, :type => 'text/html', :rel => 'alternate' }
