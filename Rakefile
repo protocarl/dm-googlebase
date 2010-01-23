@@ -9,13 +9,13 @@ begin
     gem.email = "badcarl@gmail.com"
     gem.homepage = "http://github.com/badcarl/dm-googlebase"
     gem.authors = ["Carl Porth"]
-    gem.add_dependency 'dm-core',        '>= 0.10.0'
-    gem.add_dependency 'dm-types',       '>= 0.10.0'
-    gem.add_dependency 'dm-validations', '>= 0.10.0'
+    gem.add_dependency 'dm-core',        '~> 0.10.2'
+    gem.add_dependency 'dm-types',       '~> 0.10.2'
+    gem.add_dependency 'dm-validations', '~> 0.10.2'
     gem.add_dependency 'gdata'
     gem.add_dependency 'nokogiri'
-    gem.add_development_dependency 'dm-sweatshop', '>= 0.10.0'
-    gem.add_development_dependency 'fakeweb'
+    gem.add_development_dependency 'dm-sweatshop', '~> 0.10.0'
+    gem.add_development_dependency 'fakeweb', '~> 1.2.8'
   end
 
 rescue LoadError
@@ -34,6 +34,7 @@ Spec::Rake::SpecTask.new(:rcov) do |spec|
   spec.rcov = true
 end
 
+task :spec => :check_dependencies
 
 task :default => :spec
 
