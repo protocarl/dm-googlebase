@@ -1,12 +1,8 @@
-require "pathname"
-require "rubygems"
-require "extlib"
-
 module GoogleBase
-  dir = (Pathname(__FILE__).dirname.expand_path / 'googlebase').to_s
+  dir = File.expand_path(File.join(File.dirname(__FILE__), 'googlebase'))
 
-  require dir / 'adapter'
+  require File.join(dir, 'adapter')
 
-  autoload :Product,           dir / 'product'
-  autoload :ProductProperties, dir / 'product_properties'
+  autoload :Product,           File.join(dir, 'product')
+  autoload :ProductProperties, File.join(dir, 'product_properties')
 end
