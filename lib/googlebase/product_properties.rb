@@ -10,13 +10,13 @@ module GoogleBase
     property :link,         URI,
       :from_xml => "xmlns:link[@rel='alternate']/@href",
       :to_xml => lambda { |xml, value| xml.link :href => value, :type => 'text/html', :rel => 'alternate' }
-    property :condition,    String, :field => 'g:condition',    :nullable => false # :set => %w[ new used refurbished ], :default => 'new',
+    property :condition,    String, :field => 'g:condition',    :required => true # :set => %w[ new used refurbished ], :default => 'new',
     property :product_type, String, :field => 'g:product_type', :length => 255
     property :image_link,   URI,    :field => 'g:image_link'
-    property :product_id,   String, :field => 'g:id',           :nullable => false
-    property :price,        String, :field => 'g:price',        :nullable => false
+    property :product_id,   String, :field => 'g:id',           :required => true
+    property :price,        String, :field => 'g:price',        :required => true
     property :brand,        String, :field => 'g:brand'
-    property :item_type,    String, :field => 'g:item_type',    :nullable => false, :set => %w[ Products Produkte ], :default => 'Products'
+    property :item_type,    String, :field => 'g:item_type',    :required => true, :set => %w[ Products Produkte ], :default => 'Products'
 
     # optional
     property :expires_at,       DateTime, :field => 'g:expiration_date',
