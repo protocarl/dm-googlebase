@@ -137,7 +137,7 @@ describe GoogleBase::Product do
       </entry>
     XML
 
-    FakeWeb.register_uri(:get, @url, :string => received_xml)
+    FakeWeb.register_uri(:get, @url, :body => received_xml)
     item = GoogleBase::Product.get(@url)
 
     item.id.should               == 'http://www.google.com/base/feeds/items/123456789'

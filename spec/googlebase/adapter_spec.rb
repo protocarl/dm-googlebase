@@ -45,7 +45,7 @@ describe GoogleBase::Adapter do
     # TODO ensure user and password are used
 
     it "authenticates before the first request" do
-      FakeWeb.register_uri(:get, @url, :string => xml_entry(options))
+      FakeWeb.register_uri(:get, @url, :body => xml_entry(options))
       Item.get(@url).id
       @adapter.token.should == 'z' * 182
     end
@@ -115,7 +115,7 @@ describe GoogleBase::Adapter do
     end
 
     def stub_get(options = {})
-      FakeWeb.register_uri(:get, @url, :string => xml_entry(options))
+      FakeWeb.register_uri(:get, @url, :body => xml_entry(options))
     end
 
     it_should_behave_like 'parsing an xml entry'
@@ -127,7 +127,7 @@ describe GoogleBase::Adapter do
     it 'reads each entry of the feed' do
       FakeWeb.register_uri(:get,
         'http://www.google.com/base/feeds/items?start-index=1&max-results=250',
-        :string => xml_feed(Array.new(3) { xml_entry })
+        :body => xml_feed(Array.new(3) { xml_entry })
       )
 
       Item.all.length.should == 3
@@ -139,19 +139,19 @@ describe GoogleBase::Adapter do
       # entries 1..250
       FakeWeb.register_uri(:get,
         'http://www.google.com/base/feeds/items?start-index=1&max-results=250',
-        :string => xml_feed(Array.new(250) { xml_entry }, options)
+        :body => xml_feed(Array.new(250) { xml_entry }, options)
       )
 
       # entries 251..500
       FakeWeb.register_uri(:get,
         'http://www.google.com/base/feeds/items?start-index=251&max-results=250',
-        :string => xml_feed(Array.new(250) { xml_entry }, options.merge(:start => 251))
+        :body => xml_feed(Array.new(250) { xml_entry }, options.merge(:start => 251))
       )
 
       # entry 501
       FakeWeb.register_uri(:get,
         'http://www.google.com/base/feeds/items?start-index=501&max-results=250',
-        :string => xml_feed(Array.new(1) { xml_entry }, options.merge(:start => 501))
+        :body => xml_feed(Array.new(1) { xml_entry }, options.merge(:start => 501))
       )
 
       Item.all.length.should == 501
@@ -160,7 +160,7 @@ describe GoogleBase::Adapter do
     it 'obeys offset and limit' do
       FakeWeb.register_uri(:get,
         'http://www.google.com/base/feeds/items?start-index=2&max-results=10',
-        :string => xml_feed((1..10).map { xml_entry }, { :start => 2, :per_page => 10, :total => 20 })
+        :body => xml_feed((1..10).map { xml_entry }, { :start => 2, :per_page => 10, :total => 20 })
       )
 
       Item.all(:offset => 1, :limit => 10).length.should == 10
@@ -175,7 +175,7 @@ describe GoogleBase::Adapter do
       def stub_get(options = {})
         FakeWeb.register_uri(:get,
           'http://www.google.com/base/feeds/items?start-index=1&max-results=1',
-          :string => xml_feed([ xml_entry(options) ])
+          :body => xml_feed([ xml_entry(options) ])
         )
       end
 
